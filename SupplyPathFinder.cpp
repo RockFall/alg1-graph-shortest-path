@@ -35,7 +35,6 @@ void SupplyPathFinder::Populate()
     {
       double dst = Vector2::distance(pos, stores[j]);
       edges.push_back(Edge(dst, i, j));
-      std::cout << "Edge: " << i << "-" << j << " w=" << dst << std::endl;
     }
     stores[i] = pos;
   }
@@ -46,16 +45,33 @@ void SupplyPathFinder::AddEdge(double weight, int from, int to) {
 }
 
 std::pair<double, double> SupplyPathFinder::Find(){
+  // Find MST
   std::priority_queue<double> MSTWeights = KruskalMST();
-  std::cout << "Final weights: ";
-  while (!MSTWeights.empty())
+
+  // Final variables
+  double truckKM = 0;
+  double motorcycleKM = 0;
+
+  // First 'dronesCount_'-1 edges are removed from priorityqueue
+  for (int i = 0; i < dronesCount_ - 1; i++)
   {
-    std::cout << MSTWeights.top() << " ";
     MSTWeights.pop();
   }
-  std::cout << std::endl;
 
-  return std::make_pair(0, 0);
+  // Now we get truck's edges until we hit one with distance less the motorcycle limit
+  while (!MSTWeights.empty() && MSTWeights.top() > bikeKMlimit_)
+  {
+    truckKM += MSTWeights.top();
+    MSTWeights.pop();
+  }
+
+  // The rest of the priority_queue are motorcycle's edges
+  while (!MSTWeights.empty()){
+    motorcycleKM += MSTWeights.top();
+    MSTWeights.pop();
+  }
+  // Return KM * cost
+  return std::make_pair(motorcycleKM * bikeCost_, truckKM * truckCost_);
 }
 
 std::priority_queue<double> SupplyPathFinder::KruskalMST() {
@@ -76,7 +92,7 @@ std::priority_queue<double> SupplyPathFinder::KruskalMST() {
       // Adds it to MST
       dsu.Unite(edge.from, edge.to);
       MSTWeights.push(edge.weight);
-      std::cout << "New edge to MST:" << edge.from << "-" << edge.to << " w=" << edge.weight << std::endl;
+      //std::cout << "New edge to MST:" << edge.from << "-" << edge.to << " w=" << edge.weight << std::endl;
     }
   }
 
