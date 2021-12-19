@@ -1,14 +1,14 @@
 #include "DSU.hpp"
 
-DSU::DSU(int N) : parents_(N, -1), ranks_(N, 1) {
+DSU::DSU(int N) : m_parents(N, -1), m_ranks(N, 1) {
 
 }
 
 int DSU::Find(int v){
-  if (parents_[v] == -1) {
+  if (m_parents[v] == -1) {
     return v;
   }
-  return parents_[v] = Find(parents_[v]);
+  return m_parents[v] = Find(m_parents[v]);
 }
 
 void DSU::Unite(int v1, int v2) {
@@ -16,12 +16,12 @@ void DSU::Unite(int v1, int v2) {
   int s2 = Find(v2);
 
   if (s1 != s2) {
-    if (ranks_[s1] < ranks_[s2]){
-      parents_[s1] = s2;
-      ranks_[s2] += ranks_[s1];
+    if (m_ranks[s1] < m_ranks[s2]){
+      m_parents[s1] = s2;
+      m_ranks[s2] += m_ranks[s1];
     } else {
-      parents_[s2] = s1;
-      ranks_[s1] += ranks_[s2];
+      m_parents[s2] = s1;
+      m_ranks[s1] += m_ranks[s2];
     }
   }
 }
