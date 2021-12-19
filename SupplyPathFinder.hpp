@@ -6,9 +6,13 @@
 
 #include "Edge.hpp"
 
+// Must be populated from std::cin input with Populate()
+// Finds the total distance for trucks and bikes in the best
+// arrangement of paths from all paths possible between stores
 class SupplyPathFinder
 {
 public:
+  // ---- CONSTRUCTORS ----
   SupplyPathFinder();
   SupplyPathFinder(int N, int K, int D, int M, int C);
   ~SupplyPathFinder();
@@ -23,6 +27,8 @@ public:
   std::pair<double, double> Find();
 
 private:
+  // Applies Kruskal's algorithm on the internal
+  // graph and return the MST found
   std::priority_queue<double> KruskalMST();
 
   // Total number of stores
